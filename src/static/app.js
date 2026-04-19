@@ -3,11 +3,44 @@ document.addEventListener("DOMContentLoaded", () => {
   const activitySelect = document.getElementById("activity");
   const signupForm = document.getElementById("signup-form");
   const messageDiv = document.getElementById("message");
+  const filterSearch = document.getElementById("filter-search");
+  const filterCategory = document.getElementById("filter-category");
+  const filterSort = document.getElementById("filter-sort");
+  const filterOrder = document.getElementById("filter-order");
+  const filterReset = document.getElementById("filter-reset");
+
+  const currentFilters = {
+    search: "",
+    category: "",
+    sort_by: "name",
+    sort_order: "asc",
+  };
+
+  const knownCategories = new Set();
+
+  function renderCategoryOptions() {
+    const sortedCategories = [...knownCategories].sort((a, b) =>
+      a.localeCompare(b)
+    );
+    filterCategory.innerHTML =
+      '<option value="">All categories</option>' +
+      sortedCategories
+        .map((category) => `<option value="${category}">${category}</option>`)
+        .join("");
+    filterCategory.value = currentFilters.category;
+  }
 
   // Function to fetch activities from API
   async function fetchActivities() {
     try {
-      const response = await fetch("/activities");
+      const params = new URLSearchParams();
+      if (currentFilters.search) params.set("search", currentFilters.search);
+      if (currentFilters.category)
+        params.set("category", currentFilters.category);
+      params.set("sort_by", currentFilters.sort_by);
+      params.set("sort_order", currentFilters.sort_order);
+
+      const response = await fetch(`/activities?${params.toString()}`);
       const activities = await response.json();
 
       // Clear loading message
@@ -40,6 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
         activityCard.innerHTML = `
           <h4>${name}</h4>
           <p>${details.description}</p>
+          <p><strong>Category:</strong> ${details.category || "General"}</p>
           <p><strong>Schedule:</strong> ${details.schedule}</p>
           <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
           <div class="participants-container">
@@ -54,7 +88,13 @@ document.addEventListener("DOMContentLoaded", () => {
         option.value = name;
         option.textContent = name;
         activitySelect.appendChild(option);
+
+        if (details.category) {
+          knownCategories.add(details.category);
+        }
       });
+
+      renderCategoryOptions();
 
       // Add event listeners to delete buttons
       document.querySelectorAll(".delete-btn").forEach((button) => {
@@ -65,6 +105,14 @@ document.addEventListener("DOMContentLoaded", () => {
         "<p>Failed to load activities. Please try again later.</p>";
       console.error("Error fetching activities:", error);
     }
+  }
+
+  function applyFilters() {
+    currentFilters.search = filterSearch.value.trim();
+    currentFilters.category = filterCategory.value;
+    currentFilters.sort_by = filterSort.value;
+    currentFilters.sort_order = filterOrder.value;
+    fetchActivities();
   }
 
   // Handle unregister functionality
@@ -153,6 +201,18 @@ document.addEventListener("DOMContentLoaded", () => {
       messageDiv.classList.remove("hidden");
       console.error("Error signing up:", error);
     }
+  });
+
+  filterSearch.addEventListener("input", applyFilters);
+  filterCategory.addEventListener("change", applyFilters);
+  filterSort.addEventListener("change", applyFilters);
+  filterOrder.addEventListener("change", applyFilters);
+  filterReset.addEventListener("click", () => {
+    filterSearch.value = "";
+    filterCategory.value = "";
+    filterSort.value = "name";
+    filterOrder.value = "asc";
+    applyFilters();
   });
 
   // Initialize app

@@ -6,6 +6,9 @@ A super simple FastAPI application that allows students to view and sign up for 
 
 - View all available extracurricular activities
 - Sign up for activities
+- Search activities with free text
+- Filter activities by category
+- Sort activities by name or start time
 
 ## Getting Started
 
@@ -29,7 +32,7 @@ A super simple FastAPI application that allows students to view and sign up for 
 
 | Method | Endpoint                                                          | Description                                                         |
 | ------ | ----------------------------------------------------------------- | ------------------------------------------------------------------- |
-| GET    | `/activities`                                                     | Get all activities with their details and current participant count |
+| GET    | `/activities?search=chess&category=Academic&sort_by=time&sort_order=asc` | Get activities with optional search/filter/sort controls |
 | POST   | `/activities/{activity_name}/signup?email=student@mergington.edu` | Sign up for an activity                                             |
 
 ## Data Model
@@ -40,6 +43,8 @@ The application uses a simple data model with meaningful identifiers:
 
    - Description
    - Schedule
+   - Start time
+   - Category
    - Maximum number of participants allowed
    - List of student emails who are signed up
 

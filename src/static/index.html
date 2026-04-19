@@ -15,6 +15,39 @@
     <main>
       <section id="activities-container">
         <h3>Available Activities</h3>
+        <div id="filters-toolbar">
+          <div class="filter-item filter-search-item">
+            <label for="filter-search">Search</label>
+            <input
+              type="text"
+              id="filter-search"
+              placeholder="Search by name, category, schedule..."
+            />
+          </div>
+          <div class="filter-item">
+            <label for="filter-category">Category</label>
+            <select id="filter-category">
+              <option value="">All categories</option>
+            </select>
+          </div>
+          <div class="filter-item">
+            <label for="filter-sort">Sort by</label>
+            <select id="filter-sort">
+              <option value="name">Name</option>
+              <option value="time">Start time</option>
+            </select>
+          </div>
+          <div class="filter-item">
+            <label for="filter-order">Order</label>
+            <select id="filter-order">
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
+          <div class="filter-item filter-reset-item">
+            <button type="button" id="filter-reset">Reset</button>
+          </div>
+        </div>
         <div id="activities-list">
           <!-- Activities will be loaded here -->
           <p>Loading activities...</p>
